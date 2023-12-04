@@ -18,9 +18,31 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.views.generic import TemplateView 
+from django.conf import settings
+from drf_yasg.views import get_schema_view
+from rest_framework.permissions import AllowAny
+from drf_yasg import openapi
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="E-commerce",
+        default_version="v1",
+        description="E-commerce Api Docs",
+        contact=openapi.Contact(email="hanan.vc@gmail.com"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=[AllowAny],
+)
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('ecommerce_app.urls')),  # Include your app's URLs
+    path('api/', include('ecommerce_app.urls')),
+    path('openapi/', schema_view.as_view(), name='openapi-schema'),
+    path('', TemplateView.as_view(
+        template_name='redoc.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='redoc'),
 ]
 
